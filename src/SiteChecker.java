@@ -9,10 +9,10 @@ public class SiteChecker {
         String[] cityArray = {"atlanta", "austin", "boston", "chicago", "dallas", "denver", "detroit", "houston", "lasvegas", "losangeles", "miami", "minneapolis", "newyork", "philadelphia", "phoenix", "portland", "raleigh", "sacramento", "sandiego", "seattle", "sfbay", "washingtondc", "cnj"};
         int maxPrice = 10000;
 
-        for (String s : cityArray) {
-            for (String value : modelArray) {
-                String modelWithOutWhitespace = value.replaceAll(" ", "%20");
-                String nameDomain = "https://" + s + ".craigslist.org/d/cars-trucks-by-owner/search/cto?auto_make_model=";
+        for (String city : cityArray) {
+            for (String model : modelArray) {
+                String modelWithOutWhitespace = model.replaceAll(" ", "%20");
+                String nameDomain = "https://" + city + ".craigslist.org/d/cars-trucks-by-owner/search/cto?auto_make_model=";
                 URL aUrl = new URL(nameDomain + modelWithOutWhitespace + "&max_price=" + maxPrice);
                 int adsCurrent = 0;
 
@@ -27,13 +27,13 @@ public class SiteChecker {
                                 if (startIndexPrice != -1) {
                                     adsCurrent++;
                                     int endIndexPrice = line.indexOf("</", startIndexPrice);
-                                    System.out.println(value + " #" + adsCurrent + " price : " + line.substring(startIndexPrice + 14, endIndexPrice));
+                                    System.out.println(model + " #" + adsCurrent + " price : " + line.substring(startIndexPrice + 14, endIndexPrice));
                                 }
                             }
                         }
                     }
 
-                    System.out.println("Number of ads " + value + " in " + s + " and area: " + adsCurrent);
+                    System.out.println("Number of ads " + model + " in " + city + " and area: " + adsCurrent);
                 }
             }
         }
