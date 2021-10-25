@@ -7,7 +7,7 @@ public class SiteChecker {
     public static void main(String[] args) throws IOException {
         String[] modelArray = {"bmw m3"};
         String[] cityArray = {"atlanta", "austin", "boston", "chicago", "dallas", "denver", "detroit", "houston", "lasvegas", "losangeles", "miami", "minneapolis", "newyork", "philadelphia", "phoenix", "portland", "raleigh", "sacramento", "sandiego", "seattle", "sfbay", "washingtondc", "cnj"};
-        String maxPrice = "10000";
+        int maxPrice = 10000;
 
         for (String s : cityArray) {
             for (String value : modelArray) {
