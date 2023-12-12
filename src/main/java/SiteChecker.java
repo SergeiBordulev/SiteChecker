@@ -1,14 +1,14 @@
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * SiteChecker
  * version: 2.0
  * An example of running an application from the command line
+ * java "Brand and Model" price location
+ * example:
  * java "Lexus IS300" 4000 sfbay
  */
 
