@@ -10,8 +10,14 @@ import java.util.List;
 
 
 public class SiteChecker {
-    public static void searchAds (String location, String model, int price) {
-        String modelWithOutWhitespace = model.replaceAll(" ", "%20");
+    public static void printResults(String[] args){
+        String delimiter = "|";
+
+        System.out.println(String.join(delimiter, args));
+    }
+
+    public static void searchAds (String location, String autoMakeModel, int price) {
+        String modelWithOutWhitespace = autoMakeModel.replaceAll(" ", "%20");
         String link = "https://"+ location +".craigslist.org/search/cta?auto_make_model="+ modelWithOutWhitespace +"&max_price=" + price + "&purveyor=owner&sort=priceasc#search=1~gallery~0~0";
 
         WebClient client = new WebClient();
@@ -28,19 +34,15 @@ public class SiteChecker {
             else {
                 for(HtmlElement htmlItem : items){
                     HtmlElement divTitle = htmlItem.getFirstByXPath(".//div[@class='title']");
-                    HtmlElement divlocation = htmlItem.getFirstByXPath(".//div[@class='location']");
-                    HtmlElement divPrive = htmlItem.getFirstByXPath(".//div[@class='price']");
+                    HtmlElement divLocation = htmlItem.getFirstByXPath(".//div[@class='location']");
+                    HtmlElement divPrice = htmlItem.getFirstByXPath(".//div[@class='price']");
 
-                    String itemPrice = divPrive == null ? "0.0" : divPrive.getTextContent();
+                    String itemPrice = divPrice == null ? "0.0" : divPrice.getTextContent();
                     String itemTitle = divTitle.getTextContent() ;
-                    String itemlocation = divlocation.getTextContent() ;
+                    String itemLocation = divLocation.getTextContent() ;
 
-                    System.out.print(itemPrice);
-                    System.out.print(" | ");
-                    System.out.print(itemlocation.trim());
-                    System.out.print(" | ");
-                    System.out.print(itemTitle);
-                    System.out.println();
+                    String[] resultsArray = {itemPrice, itemLocation.trim(), itemTitle};
+                    printResults(resultsArray);
                 }
             }
         } catch(Exception e){
