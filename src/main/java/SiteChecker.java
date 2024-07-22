@@ -3,6 +3,17 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import java.util.List;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.IOException;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 /**
  * SiteChecker
  * version: 2.0
@@ -24,32 +35,31 @@ public class SiteChecker {
         String autoMakeModelWithOutWhitespace = autoMakeModel.replaceAll(" ", "%20");
         String url = "https://"+ location +".craigslist.org/search/cta?auto_make_model="+ autoMakeModelWithOutWhitespace +"&max_price=" + price + "&purveyor=owner&sort=priceasc#search=1~gallery~0~0";
 
-        WebClient client = new WebClient();
-        client.getOptions().setCssEnabled(false);
-        client.getOptions().setJavaScriptEnabled(false);
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+                .build();
 
         try {
-            HtmlPage page = client.getPage(url);
-            List<HtmlElement> items = page.getByXPath("//li[@class='cl-static-search-result']") ;
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            if(items.isEmpty()){
-                System.out.println("No items found !");
-            }
-            else {
-                for(HtmlElement htmlItem : items){
-                    HtmlElement divTitle = htmlItem.getFirstByXPath(".//div[@class='title']");
-                    HtmlElement divLocation = htmlItem.getFirstByXPath(".//div[@class='location']");
-                    HtmlElement divPrice = htmlItem.getFirstByXPath(".//div[@class='price']");
+            if (response.statusCode() == 200) {
+                Document doc = Jsoup.parse(response.body());
 
-                    String itemPrice = divPrice == null ? "0.0" : divPrice.getTextContent();
-                    String itemTitle = divTitle.getTextContent() ;
-                    String itemLocation = divLocation.getTextContent() ;
+                Elements results = doc.select("li.cl-static-search-result");
+                for (Element result : results) {
+                    String itemTitle = result.select("div.title").text();
+                    String itemPrice = result.select("div.price").text();
+                    String itemLocation = result.select("div.location").text();
 
                     String[] resultsArray = {itemPrice, itemLocation.trim(), itemTitle};
                     printResults(resultsArray);
                 }
+            } else {
+                System.out.println("No items found or failed to retrieve the page. Status code: " + response.statusCode());
             }
-        } catch(Exception e){
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
